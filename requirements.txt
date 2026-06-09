@@ -1,0 +1,18 @@
+# Python 3.10+ required
+# Install: pip install -r requirements.txt
+# Chromium tự tải khi chạy server lần đầu (hoặc: python -m playwright install chromium)
+
+# --- Direct dependencies ---
+playwright==1.60.0
+requests==2.33.0
+
+# --- Playwright runtime ---
+greenlet==3.2.4
+pyee==13.0.1
+typing-extensions==4.15.0
+
+# --- requests runtime ---
+certifi==2025.10.5
+charset-normalizer==3.4.4
+idna==3.11
+urllib3==2.5.0

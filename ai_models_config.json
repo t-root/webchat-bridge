@@ -1,0 +1,101 @@
+{
+  "models": {
+    "claude": {
+      "name": "Claude",
+      "model": "claude",
+      "url": "https://claude.ai",
+      "selectors": {
+        "input": "[aria-label=\"Write your prompt to Claude\"]",
+        "send_button": "button[aria-label=\"Send message\"]",
+        "stop_button": "button[aria-label*=\"Stop\"]"
+      },
+      "response_settings": {
+        "stability_ms": 800
+      }
+    },
+    "chatgpt": {
+      "name": "ChatGPT",
+      "model": "gpt",
+      "url": "https://chatgpt.com",
+      "selectors": {
+        "input": "#prompt-textarea",
+        "send_button": "#composer-submit-button",
+        "stop_button": "#composer-submit-button[data-testid=\"stop-button\"], button[data-testid=\"stop-button\"]"
+      },
+      "response_settings": {
+        "stability_ms": 800,
+        "streaming_grace_ms": 2500
+      }
+    },
+    "gemini": {
+      "name": "Gemini",
+      "model": "gemini",
+      "url": "https://gemini.google.com",
+      "selectors": {
+        "input": "div.ql-editor[contenteditable=\"true\"]",
+        "send_button": "button[aria-label=\"Gửi tin nhắn\"], button[aria-label=\"Send message\"]",
+        "stop_button": "button[aria-label*=\"Stop\"], button[aria-label*=\"Dừng\"]"
+      },
+      "response_settings": {
+        "stability_ms": 1000,
+        "streaming_grace_ms": 2500
+      }
+    },
+    "deepseek": {
+      "name": "DeepSeek",
+      "model": "deepseek",
+      "url": "https://chat.deepseek.com",
+      "selectors": {
+        "input": "textarea[placeholder*=\"Message DeepSeek\"], textarea[name=\"search\"], textarea",
+        "send_button": "div.ds-button.ds-button--primary.ds-button--circle[role=\"button\"]:has(path[d^=\"M8.3125\"])",
+        "stop_button": "div.ds-button.ds-button--primary.ds-button--circle[role=\"button\"]:has(path[d^=\"M2 4.88\"])"
+      },
+      "response_settings": {
+        "stability_ms": 800,
+        "streaming_grace_ms": 2500
+      }
+    },
+    "grok": {
+      "name": "Grok",
+      "model": "grok",
+      "url": "https://grok.com",
+      "selectors": {
+        "input": "textarea",
+        "send_button": "button[type=\"submit\"]",
+        "stop_button": "button[data-testid=\"stop-button\"], button[aria-label*=\"Stop\"]"
+      },
+      "response_settings": {
+        "stability_ms": 1000,
+        "streaming_grace_ms": 2500
+      }
+    },
+    "copilot": {
+      "name": "Copilot",
+      "model": "copilot",
+      "url": "https://copilot.microsoft.com",
+      "selectors": {
+        "input": "#userInput",
+        "send_button": "button[data-testid=\"submit-button\"]",
+        "stop_button": "button[data-testid=\"stop-button\"]"
+      },
+      "response_settings": {
+        "stability_ms": 1000,
+        "streaming_grace_ms": 2500
+      }
+    }
+  },
+  "browser": {
+    "headless": false,
+    "channel": "chrome",
+    "startup_url": "https://github.com/t-root",
+    "user_data_dir": "browser-profile",
+    "page_load_timeout_ms": 60000,
+    "wait_for_input_ms": 300000,
+    "stealth": true,
+    "locale": "en-US"
+  },
+  "timeouts": {
+    "bridge_wait_seconds": 0,
+    "api_call_timeout_seconds": 0
+  }
+}
