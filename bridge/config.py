@@ -39,3 +39,39 @@ def list_models() -> list[dict[str, Any]]:
         }
         for key, model in (config.get("models") or {}).items()
     ]
+
+
+def get_client_settings() -> dict[str, Any]:
+    """Client defaults from ai_models_config.json; env vars override when set."""
+    config = load_config()
+    client = config.get("client") or {}
+
+    host = os.environ.get("SERVER_HOST", client.get("host", "127.0.0.1"))
+    api_port = int(os.environ.get("PORT_API", client.get("api_port", 5000)))
+    bridge_port = int(os.environ.get("PORT_EXTENSION", client.get("bridge_port", 3000)))
+
+    default_model = os.environ.get("MODEL_ID", client.get("default_model"))
+    if not default_model:
+        models = list_models()
+        default_model = models[0]["model"] if models else ""
+
+    timeout_raw = os.environ.get("CLIENT_REQUEST_TIMEOUT", client.get("request_timeout"))
+    request_timeout: float | None
+    if timeout_raw is None or str(timeout_raw).strip().lower() in ("", "none", "null", "unlimited"):
+        request_timeout = None
+    else:
+        request_timeout = float(timeout_raw)
+
+    temperature = float(os.environ.get("CLIENT_TEMPERATURE", client.get("temperature", 0.7)))
+
+    base = f"http://{host}"
+    return {
+        "host": host,
+        "api_port": api_port,
+        "bridge_port": bridge_port,
+        "default_model": default_model,
+        "temperature": temperature,
+        "request_timeout": request_timeout,
+        "api_base_url": f"{base}:{api_port}",
+        "bridge_base_url": f"{base}:{bridge_port}",
+    }

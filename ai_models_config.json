@@ -7,7 +7,8 @@
       "selectors": {
         "input": "[aria-label=\"Write your prompt to Claude\"]",
         "send_button": "button[aria-label=\"Send message\"]",
-        "stop_button": "button[aria-label*=\"Stop\"]"
+        "stop_button": "button[aria-label*=\"Stop\"]",
+        "message_frame": "[data-is-streaming=\"false\"]"
       },
       "response_settings": {
         "stability_ms": 800
@@ -20,7 +21,8 @@
       "selectors": {
         "input": "#prompt-textarea",
         "send_button": "#composer-submit-button",
-        "stop_button": "#composer-submit-button[data-testid=\"stop-button\"], button[data-testid=\"stop-button\"]"
+        "stop_button": "#composer-submit-button[data-testid=\"stop-button\"], button[data-testid=\"stop-button\"]",
+        "message_frame": "[data-message-author-role=\"assistant\"] .markdown"
       },
       "response_settings": {
         "stability_ms": 800,
@@ -34,7 +36,8 @@
       "selectors": {
         "input": "div.ql-editor[contenteditable=\"true\"]",
         "send_button": "button[aria-label=\"Gửi tin nhắn\"], button[aria-label=\"Send message\"]",
-        "stop_button": "button[aria-label*=\"Stop\"], button[aria-label*=\"Dừng\"]"
+        "stop_button": "button[aria-label*=\"Stop\"], button[aria-label*=\"Dừng\"]",
+        "message_frame": "model-response message-content"
       },
       "response_settings": {
         "stability_ms": 1000,
@@ -48,7 +51,8 @@
       "selectors": {
         "input": "textarea[placeholder*=\"Message DeepSeek\"], textarea[name=\"search\"], textarea",
         "send_button": "div.ds-button.ds-button--primary.ds-button--circle[role=\"button\"]:has(path[d^=\"M8.3125\"])",
-        "stop_button": "div.ds-button.ds-button--primary.ds-button--circle[role=\"button\"]:has(path[d^=\"M2 4.88\"])"
+        "stop_button": "div.ds-button.ds-button--primary.ds-button--circle[role=\"button\"]:has(path[d^=\"M2 4.88\"])",
+        "message_frame": "div.ds-message .ds-markdown"
       },
       "response_settings": {
         "stability_ms": 800,
@@ -62,7 +66,8 @@
       "selectors": {
         "input": "textarea",
         "send_button": "button[type=\"submit\"]",
-        "stop_button": "button[data-testid=\"stop-button\"], button[aria-label*=\"Stop\"]"
+        "stop_button": "button[data-testid=\"stop-button\"], button[aria-label*=\"Stop\"]",
+        "message_frame": "[data-turn=\"assistant\"] .markdown"
       },
       "response_settings": {
         "stability_ms": 1000,
@@ -76,7 +81,8 @@
       "selectors": {
         "input": "#userInput",
         "send_button": "button[data-testid=\"submit-button\"]",
-        "stop_button": "button[data-testid=\"stop-button\"]"
+        "stop_button": "button[data-testid=\"stop-button\"]",
+        "message_frame": "[data-testid=\"message-content\"]"
       },
       "response_settings": {
         "stability_ms": 1000,
@@ -97,5 +103,13 @@
   "timeouts": {
     "bridge_wait_seconds": 0,
     "api_call_timeout_seconds": 0
+  },
+  "client": {
+    "host": "127.0.0.1",
+    "api_port": 5000,
+    "bridge_port": 3000,
+    "default_model": "gpt",
+    "temperature": 0.7,
+    "request_timeout": null
   }
 }

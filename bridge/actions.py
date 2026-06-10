@@ -7,37 +7,19 @@ from typing import Any
 
 from playwright.sync_api import Locator, Page
 
-
 def split_selectors(selector: str | None) -> list[str]:
     if not selector:
         return []
     return [s.strip() for s in selector.split(",") if s.strip()]
 
 
-# Shared response extraction — always read the last assistant turn on the page.
-_ASSISTANT_TURN_SELECTORS = [
-    '[data-message-author-role="assistant"]',
-    "model-response",
-    "div.ds-message:has(.ds-markdown)",
-    '[data-testid="conversation-turn"]',
-    ".assistant-message",
-    '[data-turn="assistant"]',
-    "[data-is-streaming]",
-]
-
-_CONTENT_SELECTORS = [
-    ".font-claude-response",
-    ".markdown",
-    '[class*="markdown"]',
-    "message-content .markdown",
-    "message-content .model-response-text",
-    "message-content",
-    ".ds-markdown",
-    ".ds-markdown--block",
-    '[data-testid="message-content"]',
-    ".prose",
-    "[data-content]",
-]
+def resolve_message_frame(model_config: dict[str, Any]) -> str | None:
+    """Return the selector for the last assistant message on the page."""
+    selectors = model_config.get("selectors") or {}
+    message_frame = selectors.get("message_frame")
+    if isinstance(message_frame, str):
+        return message_frame.strip() or None
+    return None
 
 
 def _page_blocker_hint(page: Page) -> str | None:
@@ -172,44 +154,21 @@ def _is_generating(page: Page, selectors: dict[str, str]) -> bool:
     return False
 
 
-def _extract_turn_text(turn: Locator) -> str:
-    for sel in _CONTENT_SELECTORS:
-        inner = turn.locator(sel).first
-        try:
-            if inner.count() > 0:
-                text = inner.inner_text().strip()
-                if text:
-                    return text
-        except Exception:
-            pass
-    try:
-        return turn.inner_text().strip()
-    except Exception:
-        return ""
-
-
-def _read_last_response(page: Page) -> str:
-    for turn_sel in _ASSISTANT_TURN_SELECTORS:
-        turns = page.locator(turn_sel)
+def _read_last_response(page: Page, message_frame: str | None) -> str:
+    """Pick the last message frame for this AI and read its text."""
+    for frame_sel in split_selectors(message_frame):
+        turns = page.locator(frame_sel)
         try:
             count = turns.count()
         except Exception:
             continue
         if count > 0:
-            text = _extract_turn_text(turns.nth(count - 1))
-            if text:
-                return text
-
-    for content_sel in _CONTENT_SELECTORS:
-        items = page.locator(content_sel)
-        try:
-            count = items.count()
-        except Exception:
-            continue
-        if count > 0:
-            text = items.nth(count - 1).inner_text().strip()
-            if text:
-                return text
+            try:
+                text = turns.nth(count - 1).inner_text().strip()
+                if text:
+                    return text
+            except Exception:
+                pass
 
     return ""
 
@@ -220,8 +179,14 @@ def send_and_wait_response(page: Page, model_config: dict[str, Any], text: str) 
     stability_ms = rs.get("stability_ms", 800)
     streaming_grace_ms = rs.get("streaming_grace_ms", 2500)
     max_wait_ms = rs.get("max_wait_ms", 300000)
+    message_frame = resolve_message_frame(model_config)
+    if not message_frame:
+        raise RuntimeError(
+            f"selectors.message_frame is required for model "
+            f"{model_config.get('model') or model_config.get('key')}"
+        )
 
-    baseline = _read_last_response(page)
+    baseline = _read_last_response(page, message_frame)
 
     fill_prompt(page, selectors, text)
     page.wait_for_timeout(300)
@@ -239,7 +204,7 @@ def send_and_wait_response(page: Page, model_config: dict[str, Any], text: str) 
             page.wait_for_timeout(300)
             continue
 
-        current = _read_last_response(page)
+        current = _read_last_response(page, message_frame)
         if not current or current == baseline:
             page.wait_for_timeout(300)
             continue
